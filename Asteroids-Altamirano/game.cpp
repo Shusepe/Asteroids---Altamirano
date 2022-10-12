@@ -4,24 +4,37 @@
 #include "bullet.h"
 #include "asteroid.h"
 
+enum Options
+{
+    Menu,
+    Play,
+    Credits,
+    Quit
+};
+
 static Bullet bullet[PLAYER_MAX_BULLET] = { 0 };
 
 static Asteroid bigAsteroid[MAX_BIG_ASTEROID] = { 0 };
 static Asteroid mediumAsteroid[MAX_MEDIUM_ASTEROID] = { 0 };
 static Asteroid smallAsteroid[MAX_SMALL_ASTEROID] = { 0 };
 
-typedef struct button {
+typedef struct Button {
     float x;
     float y;
     float width;
     float height;
+
+    const char* text;
 };
 
-button buttonPlay;
-button buttonCredits;
-button buttonQuit;
-button buttonPause;
-button buttonBackToMenu;
+Button buttonPlay;
+Button buttonCredits;
+Button buttonQuit;
+Button buttonPause;
+Button buttonReturn;
+Button buttonContinue;
+
+Options chosenOpc = Options::Menu;
 
 float screenWidth;
 float screenHeight;
@@ -30,105 +43,146 @@ bool gameOver = false;
 bool checkPause = false;
 bool victory = false;
 bool activeMenu = true;
-bool onQuit = false;
 
 int destroyedAsteroidCount = 0;
 
-int initGame();                                                 // Initialize game
-static void game();                                             // Play game
-//static void credits();                                        // Show credits
-static void updateGame();                                       // Update game 
-static void drawGame();                                         // Draw game 
-static void logicMenu();                                        // Logic Menu 
-static void drawMenu();                                         // Draw Menu 
-static void updateDrawFrame();                                  // Update and Draw 
-static void mainMenu(button buttonPlay, button buttonQuit);     // Menu
+int initGame();                                                                          // Initialize game
+static void game();                                                                      // Play game
+static void showCredits();                                                                 // Show credits
+static void updateGame();                                                                // Update game 
+static void drawGame();                                                                  // Draw game 
+static void logicMenu();                                                                 // Logic Menu 
+static void drawMenu();                                                                  // Draw Menu 
+static void updateDrawFrame();                                                           // Update and Draw 
 
-void initMenu(button *buttonPlay, button *buttonQuit)
+void initButtons()
 {
-    (*buttonPlay).width = 100;
-    (*buttonPlay).height = 30;
-    (*buttonPlay).x = screenWidth / 2 - (*buttonPlay).width / 2;
-    (*buttonPlay).y = screenHeight / 2 - (*buttonPlay).height / 2;
+    buttonPlay.width = 120;
+    buttonPlay.height = 30;
+    buttonPlay.x = screenWidth / 2 - buttonPlay.width / 2;
+    buttonPlay.y = screenHeight / 2 - buttonPlay.height / 2;
+    buttonPlay.text = "Play";
+    
+    buttonCredits.width = 100;
+    buttonCredits.height = 30;
+    buttonCredits.x = screenWidth / 2 - buttonCredits.width / 2;
+    buttonCredits.y = screenHeight / 2 - buttonCredits.height / 2 + 65;
+    buttonCredits.text = "Credits";
 
-    (*buttonQuit).width = 50;
-    (*buttonQuit).height = 30;
-    (*buttonQuit).x = screenWidth / 2 - (*buttonQuit).width / 2;
-    (*buttonQuit).y = screenHeight / 2 - (*buttonQuit).height / 2 + 130;
+    buttonQuit.width = 50;
+    buttonQuit.height = 30;
+    buttonQuit.x = screenWidth / 2 - buttonQuit.width / 2;
+    buttonQuit.y = screenHeight / 2 - buttonQuit.height / 2 + 130;
+    buttonQuit.text = "Quit";
+
+    buttonReturn.width = 180;
+    buttonReturn.height = 30;
+    buttonReturn.x = 20;
+    buttonReturn.y = screenHeight - buttonReturn.height - 20;
+    buttonReturn.text = "Back To Menu";
+    
+    buttonPause.width = 80;
+    buttonPause.height = 30;
+    buttonPause.x = screenWidth - buttonPause.width - 20;
+    buttonPause.y = 20;
+    buttonPause.text = "Pause";
+    
+    buttonContinue.width = 110;
+    buttonContinue.height = 30;
+    buttonContinue.x = screenWidth / 2 - buttonContinue.width / 2;
+    buttonContinue.y = screenHeight / 2 - buttonContinue.height / 2 + 50;
+    buttonContinue.text = "Continue";
 };
 
-void mainMenu(button buttonPlay, button buttonQuit)
+void logicMenu() 
 {
-    logicMenu();
-
-    drawMenu();
-};
-
-void logicMenu()
-{
-    if (CheckCollisionCircleRec(Vector2{ (float) GetMouseX(), (float) GetMouseY() }, 5, Rectangle{ buttonPlay.x, buttonPlay.y, buttonPlay.width, buttonPlay.height }))
+    if (CheckCollisionCircleRec(Vector2{ (float)GetMouseX(), (float)GetMouseY() }, 5, Rectangle{ buttonPlay.x, buttonPlay.y, buttonPlay.width, buttonPlay.height }))
     {
         if (IsMouseButtonDown(MOUSE_BUTTON_LEFT))
         {
             game();
-            activeMenu = false;
+            chosenOpc = Options::Play;
         }
     }
     
-    if (CheckCollisionCircleRec(Vector2{ (float) GetMouseX(), (float) GetMouseY() }, 5, Rectangle{ buttonQuit.x, buttonQuit.y, buttonQuit.width, buttonQuit.height }))
+    if (CheckCollisionCircleRec(Vector2{ (float)GetMouseX(), (float)GetMouseY() }, 5, Rectangle{ buttonCredits.x, buttonCredits.y, buttonCredits.width, buttonCredits.height }))
     {
         if (IsMouseButtonDown(MOUSE_BUTTON_LEFT))
         {
-            onQuit = true;
-            CloseWindow();
+            chosenOpc = Options::Credits;
         }
     }
+    
+    if (CheckCollisionCircleRec(Vector2{ (float)GetMouseX(), (float)GetMouseY() }, 5, Rectangle{ buttonQuit.x, buttonQuit.y, buttonQuit.width, buttonQuit.height }))
+    {
+        if (IsMouseButtonDown(MOUSE_BUTTON_LEFT))
+        {
+            chosenOpc = Options::Quit;
+        }
+    }
+}
+
+void drawButton(Button button)
+{
+    if (CheckCollisionCircleRec(Vector2{ (float)GetMouseX(), (float)GetMouseY() }, 5, Rectangle{ button.x, button.y, button.width, button.height }))
+    {
+        DrawRectangle(button.x, button.y, button.width, button.height, DARKBLUE);
+        DrawText(button.text, button.x, button.y, 25, WHITE);
+    }
+    else
+    {
+        DrawRectangle(button.x, button.y, button.width, button.height, WHITE);
+        DrawText(button.text, button.x, button.y, 25, DARKBLUE);
+    }
+};
+
+void showCredits()
+{
+    if (CheckCollisionCircleRec(Vector2{ (float)GetMouseX(), (float)GetMouseY() }, 5, Rectangle{ buttonReturn.x, buttonReturn.y, buttonReturn.width, buttonReturn.height }))
+    {
+        if (IsMouseButtonDown(MOUSE_BUTTON_LEFT))
+        {
+            chosenOpc = Options::Menu;
+        }
+    }
+
+    BeginDrawing();
+
+    ClearBackground(BLACK);
+
+    HideCursor();
+    DrawCircle((float)GetMouseX(), (float)GetMouseY(), 5, RED);
+
+    DrawText("Created by:", 0, screenHeight / 2 - 40, 40, WHITE);
+    DrawText("Jose Altamirano", 0, screenHeight / 2, 60, WHITE);
+
+    //DrawButtonReturn
+    drawButton(buttonReturn);
+
+    EndDrawing();
 };
 
 void drawMenu()
 {
-    if (!onQuit)
-    {
-        BeginDrawing();
+    BeginDrawing();
 
-        ClearBackground(BLACK);
+    ClearBackground(BLACK);
 
-        HideCursor();
-        DrawCircle((float)GetMouseX(), (float)GetMouseY(), 5, RED);
+    HideCursor();
+    DrawCircle((float)GetMouseX(), (float)GetMouseY(), 5, RED);
 
-        if (CheckCollisionCircleRec(Vector2{ (float)GetMouseX(), (float)GetMouseY() }, 5, Rectangle{ buttonPlay.x, buttonPlay.y, buttonPlay.width, buttonPlay.height }))
-        {
-            DrawRectangle(buttonPlay.x, buttonPlay.y, buttonPlay.width, buttonPlay.height, DARKBLUE);
-            DrawText("Play", buttonPlay.x, buttonPlay.y, 25, WHITE);
-        }
-        else
-        {
-            DrawRectangle(buttonPlay.x, buttonPlay.y, buttonPlay.width, buttonPlay.height, WHITE);
-            DrawText("Play", buttonPlay.x, buttonPlay.y, 25, DARKBLUE);
-        }
+    DrawText("Asteroids", 0, 0, 120,WHITE);
 
-        /*if (CheckCollisionCircleRec(Vector2{ (float)GetMouseX(), (float)GetMouseY() }, 5, Rectangle{ buttonPlay.x - buttonPlay.width / 2, buttonPlay.y - buttonPlay.height / 2, buttonPlay.width, buttonPlay.height }))
-        {
-            DrawRectangle(buttonPlay.x - buttonPlay.width / 2, buttonPlay.y - buttonPlay.height / 2, buttonPlay.width, buttonPlay.height, BLUE);
-        }
-        else
-        {
-            DrawRectangle(buttonPlay.x - buttonPlay.width / 2, buttonPlay.y - buttonPlay.height / 2, buttonPlay.width, buttonPlay.height, WHITE);
-        }*/
+    //DrawButtonPlay
+    drawButton(buttonPlay);
 
-        if (CheckCollisionCircleRec(Vector2{ (float)GetMouseX(), (float)GetMouseY() }, 5, Rectangle{ buttonQuit.x, buttonQuit.y, buttonQuit.width, buttonQuit.height }))
-        {
-            DrawRectangle(buttonQuit.x, buttonQuit.y, buttonQuit.width, buttonQuit.height, DARKBLUE);
-            DrawText("Quit", buttonQuit.x, buttonQuit.y, 22, WHITE);
-        }
-        else
-        {
-            DrawRectangle(buttonQuit.x, buttonQuit.y, buttonQuit.width, buttonQuit.height, WHITE);
-            DrawText("Quit", buttonQuit.x, buttonQuit.y, 22, DARKBLUE);
-        }
+    //DrawButtonCredits
+    drawButton(buttonCredits);
 
-        EndDrawing();
-    }
+    //DrawButtonQuit
+    drawButton(buttonQuit);
+
+    EndDrawing();
 };
 
 int initGame()
@@ -136,27 +190,38 @@ int initGame()
     screenWidth = 800;
     screenHeight = 450;
 
+    /*screenWidth = 1024;
+    screenHeight = 768;*/
+
     InitWindow(screenWidth, screenHeight, "Asteroids - Altamirano");
 
-    initMenu(&buttonPlay, &buttonQuit);
-    //game();
+    initButtons();
 
     SetTargetFPS(60);
     
     // Main game loop
-    while (!WindowShouldClose()) // Detect window close button or ESC key
-    {
+    while (!WindowShouldClose() && chosenOpc != Options::Quit) // Detect window close button or ESC key
+    {   
         // Update and Draw
-        if (activeMenu)
+        switch (chosenOpc)
         {
-            mainMenu(buttonPlay, buttonQuit);
-        }
-        else
-        {
+        case Menu:
+            logicMenu();
+            drawMenu();
+            break;
+
+        case Play:
             updateDrawFrame();
+            break;
+
+        case Credits:
+            showCredits();
+            break;
         }
     }
-    
+
+    CloseWindow();
+
     return 0;
 }
 
@@ -187,8 +252,6 @@ void updateGame()
 {
     if (!gameOver)
     {
-        if (IsKeyPressed('P')) checkPause = !checkPause;
-
         if (!checkPause)
         {
             playerRotation();
@@ -208,6 +271,32 @@ void updateGame()
             smallAsteroidLogic(smallAsteroid);
 
             collisionBulletAsteroid(bullet, bigAsteroid, mediumAsteroid, smallAsteroid);
+
+            if (CheckCollisionCircleRec(Vector2{ (float)GetMouseX(), (float)GetMouseY() }, 5, Rectangle{ buttonPause.x, buttonPause.y, buttonPause.width, buttonPause.height }))
+            {
+                if (IsMouseButtonDown(MOUSE_BUTTON_LEFT))
+                {
+                    checkPause = !checkPause;
+                }
+            }
+        }
+        else
+        {
+            if (CheckCollisionCircleRec(Vector2{ (float)GetMouseX(), (float)GetMouseY() }, 5, Rectangle{ buttonContinue.x, buttonContinue.y, buttonContinue.width, buttonContinue.height }))
+            {
+                if (IsMouseButtonDown(MOUSE_BUTTON_LEFT))
+                {
+                    checkPause = !checkPause;
+                }
+            }
+
+            if (CheckCollisionCircleRec(Vector2{ (float)GetMouseX(), (float)GetMouseY() }, 5, Rectangle{ buttonReturn.x, buttonReturn.y, buttonReturn.width, buttonReturn.height }))
+            {
+                if (IsMouseButtonDown(MOUSE_BUTTON_LEFT))
+                {
+                    chosenOpc = Options::Menu;
+                }
+            }
         }
 
         if (destroyedAsteroidCount == MAX_BIG_ASTEROID + MAX_MEDIUM_ASTEROID + MAX_SMALL_ASTEROID) victory = true;
@@ -241,7 +330,18 @@ void drawGame()
 
         if (victory) DrawText("VICTORY", screenWidth / 2 - MeasureText("VICTORY", 20) / 2, screenHeight / 2, 20, LIGHTGRAY);
 
-        if (checkPause) DrawText("GAME PAUSED", screenWidth / 2 - MeasureText("GAME PAUSED", 40) / 2, screenHeight / 2 - 40, 40, GRAY);
+        if (checkPause)
+        {
+            DrawText("GAME PAUSED", screenWidth / 2 - MeasureText("GAME PAUSED", 40) / 2, screenHeight / 2 - 40, 40, GRAY);
+
+            drawButton(buttonReturn);
+            drawButton(buttonContinue);
+        }
+        else
+        {
+            //DrawButtonPause
+            drawButton(buttonPause);
+        }
     }
     else DrawText("PRESS [ENTER] TO PLAY AGAIN", GetScreenWidth() / 2 - MeasureText("PRESS [ENTER] TO PLAY AGAIN", 20) / 2, GetScreenHeight() / 2 - 50, 20, GRAY);
 
