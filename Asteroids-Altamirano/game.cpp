@@ -51,6 +51,7 @@ bool checkPause = false;
 bool activeMenu = true;
 
 int destroyedAsteroidCount = 0;
+int maxScore = 0;
 
 int initGame();                                                                          // Initialize game
 static void game();                                                                      // Play game
@@ -223,11 +224,8 @@ void drawMenu()
 
 int initGame()
 {
-    screenWidth = 800;
-    screenHeight = 450;
-
-    /*screenWidth = 1024;
-    screenHeight = 768;*/
+    screenWidth = 1024;
+    screenHeight = 768;
 
     if (!IsAudioDeviceReady())
     {
@@ -306,8 +304,6 @@ void updateGame()
             playerRotation();
             playerSpeed();
             movePlayer();
-            //playerAceleration();
-            //playerMovement();
             playerCollisionWall();
             playerBullet(bullet);
 
@@ -348,6 +344,8 @@ void updateGame()
                 }
             }
         }
+         
+        maxScore = destroyedAsteroidCount;
     }
     else
     {
@@ -411,6 +409,9 @@ void drawGame()
     {
         DrawText("GAME OVER", GetScreenWidth() / 2 - MeasureText("GAME OVER", 20) / 2, GetScreenHeight() / 2 - 100, 20, GRAY);
         DrawText("PRESS [ENTER] TO PLAY AGAIN", GetScreenWidth() / 2 - MeasureText("PRESS [ENTER] TO PLAY AGAIN", 20) / 2, GetScreenHeight() / 2 - 50, 20, GRAY);
+        DrawText(TextFormat("YOUR MAX SCORE: %i", maxScore), GetScreenWidth() / 2 - MeasureText("GAME OVER", 20) / 2, GetScreenHeight() / 2, 20, GRAY);
+
+        destroyedAsteroidCount = 0;
     }
 
     EndDrawing();

@@ -33,33 +33,6 @@ void initPlayer()
 	player.color = LIGHTGRAY;
 };
 
-//void playerMovement() 
-//{
-//	// Player logic: movement
-//	//nuevaPosNave = posNave + aceleracionNave * tiempoEntreFrames
-//
-//	player.position.x += (player.speed.x * player.acceleration);
-//	player.position.y -= (player.speed.y * player.acceleration);
-//};
-
-//void playerAceleration() 
-//{
-//	//direccionNormalizada = vectorDireccion / modulo(vectorDireccion)
-//	// sumar aceleración en esa dirección 
-//	//aceleracionNave += direccionNormalizada
-//	
-//	// Player logic: acceleration
-//	if (IsMouseButtonDown(MOUSE_BUTTON_RIGHT))
-//	{
-//		if (player.acceleration < 1) player.acceleration += 0.04f;
-//	}
-//	else
-//	{
-//		if (player.acceleration > 0) player.acceleration -= 0.02f;
-//		else if (player.acceleration < 0) player.acceleration = 0;
-//	}
-//};
-
 void playerRotation() 
 {
 	// Player logic: rotation
