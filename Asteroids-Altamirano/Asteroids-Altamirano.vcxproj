@@ -156,7 +156,20 @@
     <ClInclude Include="asteroid.h" />
     <ClInclude Include="bullet.h" />
     <ClInclude Include="game.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="ship.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\img\bigAsteroid.png" />
+    <Image Include="res\img\mediumAsteroid.png" />
+    <Image Include="res\img\ship.png" />
+    <Image Include="res\img\smallAsteroid.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Media Include="res\sfx\disparo.mp3" />
+    <Media Include="res\sfx\explosionDeAsteroide.wav" />
+    <Media Include="res\sfx\explosionDeNave.wav" />
+    <Media Include="res\sfx\musicaJuego.wav" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

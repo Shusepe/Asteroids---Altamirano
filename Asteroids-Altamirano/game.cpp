@@ -12,6 +12,8 @@ enum Options
     Quit
 };
 
+extern Player player;
+
 static Bullet bullet[PLAYER_MAX_BULLET] = { 0 };
 
 static Asteroid bigAsteroid[MAX_BIG_ASTEROID] = { 0 };
@@ -36,9 +38,14 @@ Button buttonContinue;
 
 Options chosenOpc = Options::Menu;
 
+Music music;
+
+static const char musicUrl[] = "res/sfx/musicaJuego.wav";
+
 float screenWidth;
 float screenHeight;
 
+bool shipImpacted = false;
 bool gameOver = false;
 bool checkPause = false;
 bool victory = false;
@@ -48,7 +55,7 @@ int destroyedAsteroidCount = 0;
 
 int initGame();                                                                          // Initialize game
 static void game();                                                                      // Play game
-static void showCredits();                                                                 // Show credits
+static void showCredits();                                                               // Show credits
 static void updateGame();                                                                // Update game 
 static void drawGame();                                                                  // Draw game 
 static void logicMenu();                                                                 // Logic Menu 
@@ -193,6 +200,14 @@ int initGame()
     /*screenWidth = 1024;
     screenHeight = 768;*/
 
+    if (!IsAudioDeviceReady())
+    {
+        InitAudioDevice();
+
+        music = LoadMusicStream(musicUrl);
+        SetMusicVolume(music, 0.15f);
+    }
+
     InitWindow(screenWidth, screenHeight, "Asteroids - Altamirano");
 
     initButtons();
@@ -202,6 +217,12 @@ int initGame()
     // Main game loop
     while (!WindowShouldClose() && chosenOpc != Options::Quit) // Detect window close button or ESC key
     {   
+        if (!IsMusicStreamPlaying(music))
+        {
+            PlayMusicStream(music);
+        }
+        else UpdateMusicStream(music);
+
         // Update and Draw
         switch (chosenOpc)
         {
@@ -279,6 +300,11 @@ void updateGame()
                     checkPause = !checkPause;
                 }
             }
+
+            if (shipImpacted)
+            {
+                initAsteroid(bigAsteroid, mediumAsteroid, smallAsteroid);
+            }
         }
         else
         {
@@ -342,6 +368,14 @@ void drawGame()
             //DrawButtonPause
             drawButton(buttonPause);
         }
+
+        if (shipImpacted)
+        {
+            DrawText("YOUR SHIP CRASHED", GetScreenWidth() / 2 - MeasureText("YOUR SHIP CRASHED", 20) / 2, GetScreenHeight() / 2 - 50, 20, GRAY);
+            DrawText("PRESS [ENTER] TO CONTINUE", GetScreenWidth() / 2 - MeasureText("PRESS [ENTER] TO CONTINUE", 20) / 2, GetScreenHeight() / 2 - 100, 20, GRAY);
+        }
+        
+        DrawText(TextFormat("Lives: %i", player.lives), 5, 5, 20, WHITE);
     }
     else DrawText("PRESS [ENTER] TO PLAY AGAIN", GetScreenWidth() / 2 - MeasureText("PRESS [ENTER] TO PLAY AGAIN", 20) / 2, GetScreenHeight() / 2 - 50, 20, GRAY);
 

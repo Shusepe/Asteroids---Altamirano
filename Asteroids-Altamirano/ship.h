@@ -7,15 +7,16 @@
 #define PLAYER_SPEED        6.0f
 
 typedef struct Player {
+    Texture2D sprite;
+    Sound explodeSfx;
     Vector2 position;
     Vector2 speed;
     float acceleration;
     float rotation;
+    int lives;
     Vector3 collider;
     Color color;
 } Player;
-
-static Player player = { 0 };
 
 void initPlayer();
 void playerMovement();

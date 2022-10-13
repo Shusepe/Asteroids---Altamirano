@@ -8,11 +8,15 @@ extern int midAsteroidCount;
 extern int smallAsteroidCount;
 extern int destroyedAsteroidCount;
 
+
+static const char shootSfxUrl[] = "res/sfx/disparo.mp3";
+
 void initBullet(Bullet bullet[])
 {
     // Initialization shoot
     for (int i = 0; i < PLAYER_MAX_BULLET; i++)
     {
+        bullet[i].shootSfx = LoadSound(shootSfxUrl);
         bullet[i].position = { 0, 0 };
         bullet[i].speed = { 0, 0 };
         bullet[i].radius = 2;
@@ -92,6 +96,9 @@ void collisionBulletAsteroid(Bullet bullet[], Asteroid bigAsteroid[], Asteroid m
                     bigAsteroid[a].active = false;
                     destroyedAsteroidCount++;
 
+                    SetSoundPitch(bigAsteroid[a].explodeSfx, ((float)GetRandomValue(0, 15) / 100) + 1);
+                    PlaySound(bigAsteroid[a].explodeSfx);
+
                     for (int j = 0; j < 2; j++)
                     {
                         if (midAsteroidCount % 2 == 0)
@@ -121,6 +128,9 @@ void collisionBulletAsteroid(Bullet bullet[], Asteroid bigAsteroid[], Asteroid m
                     mediumAsteroid[b].active = false;
                     destroyedAsteroidCount++;
 
+                    SetSoundPitch(mediumAsteroid[b].explodeSfx, ((float)GetRandomValue(0, 15) / 100) + 1);
+                    PlaySound(mediumAsteroid[b].explodeSfx);
+
                     for (int j = 0; j < 2; j++)
                     {
                         if (smallAsteroidCount % 2 == 0)
@@ -149,6 +159,10 @@ void collisionBulletAsteroid(Bullet bullet[], Asteroid bigAsteroid[], Asteroid m
                     bullet[i].lifeSpawn = 0;
                     smallAsteroid[c].active = false;
                     destroyedAsteroidCount++;
+
+                    SetSoundPitch(smallAsteroid[c].explodeSfx, ((float)GetRandomValue(0, 15) / 100) + 1);
+                    PlaySound(smallAsteroid[c].explodeSfx);
+
                     c = MAX_SMALL_ASTEROID;
                 }
             }

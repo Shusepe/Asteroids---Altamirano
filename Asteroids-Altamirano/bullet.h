@@ -2,9 +2,10 @@
 #include "raylib.h"
 #include "asteroid.h"
 
-#define PLAYER_MAX_BULLET   10
+#define PLAYER_MAX_BULLET   3
 
 typedef struct Bullet {
+    Sound shootSfx;
     Vector2 position;
     Vector2 speed;
     float radius;

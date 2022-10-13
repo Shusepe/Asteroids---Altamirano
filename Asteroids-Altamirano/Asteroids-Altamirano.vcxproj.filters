@@ -44,5 +44,36 @@
     <ClInclude Include="ship.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\img\ship.png">
+      <Filter>Archivos de recursos</Filter>
+    </Image>
+    <Image Include="res\img\mediumAsteroid.png">
+      <Filter>Archivos de recursos</Filter>
+    </Image>
+    <Image Include="res\img\bigAsteroid.png">
+      <Filter>Archivos de recursos</Filter>
+    </Image>
+    <Image Include="res\img\smallAsteroid.png">
+      <Filter>Archivos de recursos</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Media Include="res\sfx\explosionDeAsteroide.wav">
+      <Filter>Archivos de recursos</Filter>
+    </Media>
+    <Media Include="res\sfx\musicaJuego.wav">
+      <Filter>Archivos de recursos</Filter>
+    </Media>
+    <Media Include="res\sfx\disparo.mp3">
+      <Filter>Archivos de recursos</Filter>
+    </Media>
+    <Media Include="res\sfx\explosionDeNave.wav">
+      <Filter>Archivos de recursos</Filter>
+    </Media>
   </ItemGroup>
 </Project>

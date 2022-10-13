@@ -7,6 +7,8 @@
 #define MAX_SMALL_ASTEROID   16
 
 typedef struct Asteroid {
+    Texture2D sprite;
+    Sound explodeSfx;
     Vector2 position;
     Vector2 speed;
     float radius;
