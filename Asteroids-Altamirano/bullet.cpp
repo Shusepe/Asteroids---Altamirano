@@ -7,7 +7,7 @@ extern float screenWidth;
 extern int midAsteroidCount;
 extern int smallAsteroidCount;
 extern int destroyedAsteroidCount;
-
+extern int bigAsteroidsNonAlive;
 
 static const char shootSfxUrl[] = "res/sfx/disparo.mp3";
 
@@ -117,6 +117,27 @@ void collisionBulletAsteroid(Bullet bullet[], Asteroid bigAsteroid[], Asteroid m
                     }
                     a = MAX_BIG_ASTEROID;
                 }
+
+                if (!bigAsteroid[a].active)
+                {
+                    bigAsteroidsNonAlive += 1;
+                }
+            }
+
+            if (bigAsteroidsNonAlive == MAX_BIG_ASTEROID)
+            {
+                for (int a = 0; a < MAX_BIG_ASTEROID; a++)
+                {
+                    bigAsteroid[a].active = true;
+                    bigAsteroid[a].position.y = GetRandomValue(0, screenHeight);
+                    bigAsteroid[a].position.x = GetRandomValue(0, screenWidth);
+                }
+
+                bigAsteroidsNonAlive = 0;
+            }
+            else
+            {
+                bigAsteroidsNonAlive = 0;
             }
 
             for (int b = 0; b < MAX_MEDIUM_ASTEROID; b++)

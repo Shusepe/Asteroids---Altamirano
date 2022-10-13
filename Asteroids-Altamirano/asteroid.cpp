@@ -5,6 +5,7 @@ extern float screenHeight;
 
 int midAsteroidCount = 0;
 int smallAsteroidCount = 0;
+int bigAsteroidsNonAlive = 0;
 
 static const char bigAsteroidImgUrl[] = "res/img/bigAsteroid.png";
 static const char mediumAsteroidImgUrl[] = "res/img/mediumAsteroid.png";

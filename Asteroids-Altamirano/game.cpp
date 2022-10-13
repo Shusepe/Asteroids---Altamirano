@@ -48,7 +48,6 @@ float screenHeight;
 bool shipImpacted = false;
 bool gameOver = false;
 bool checkPause = false;
-bool victory = false;
 bool activeMenu = true;
 
 int destroyedAsteroidCount = 0;
@@ -271,7 +270,7 @@ void game()
 // Update game
 void updateGame()
 {
-    if (!gameOver)
+    if (!shipImpacted)
     {
         if (!checkPause)
         {
@@ -300,11 +299,6 @@ void updateGame()
                     checkPause = !checkPause;
                 }
             }
-
-            if (shipImpacted)
-            {
-                initAsteroid(bigAsteroid, mediumAsteroid, smallAsteroid);
-            }
         }
         else
         {
@@ -331,6 +325,14 @@ void updateGame()
     {
         if (IsKeyPressed(KEY_ENTER))
         {
+            initAsteroid(bigAsteroid, mediumAsteroid, smallAsteroid);
+            
+            if (gameOver && player.lives <= 0)
+            {
+                player.lives = 3;
+            }
+
+            shipImpacted = false;
             gameOver = false;
             updateDrawFrame();
         }
@@ -354,8 +356,6 @@ void drawGame()
 
         drawBullet(bullet);
 
-        if (victory) DrawText("VICTORY", screenWidth / 2 - MeasureText("VICTORY", 20) / 2, screenHeight / 2, 20, LIGHTGRAY);
-
         if (checkPause)
         {
             DrawText("GAME PAUSED", screenWidth / 2 - MeasureText("GAME PAUSED", 40) / 2, screenHeight / 2 - 40, 40, GRAY);
@@ -363,7 +363,8 @@ void drawGame()
             drawButton(buttonReturn);
             drawButton(buttonContinue);
         }
-        else
+        
+        if (!shipImpacted)
         {
             //DrawButtonPause
             drawButton(buttonPause);
@@ -371,13 +372,18 @@ void drawGame()
 
         if (shipImpacted)
         {
-            DrawText("YOUR SHIP CRASHED", GetScreenWidth() / 2 - MeasureText("YOUR SHIP CRASHED", 20) / 2, GetScreenHeight() / 2 - 50, 20, GRAY);
-            DrawText("PRESS [ENTER] TO CONTINUE", GetScreenWidth() / 2 - MeasureText("PRESS [ENTER] TO CONTINUE", 20) / 2, GetScreenHeight() / 2 - 100, 20, GRAY);
+            DrawText("YOUR SHIP CRASHED", GetScreenWidth() / 2 - MeasureText("YOUR SHIP CRASHED", 20) / 2, GetScreenHeight() / 2 - 100, 20, GRAY);
+            DrawText("PRESS [ENTER] TO CONTINUE", GetScreenWidth() / 2 - MeasureText("PRESS [ENTER] TO CONTINUE", 20) / 2, GetScreenHeight() / 2 - 50, 20, GRAY);
         }
         
         DrawText(TextFormat("Lives: %i", player.lives), 5, 5, 20, WHITE);
+        DrawText(TextFormat("Score: %i", destroyedAsteroidCount), 5, 25, 20, WHITE);
     }
-    else DrawText("PRESS [ENTER] TO PLAY AGAIN", GetScreenWidth() / 2 - MeasureText("PRESS [ENTER] TO PLAY AGAIN", 20) / 2, GetScreenHeight() / 2 - 50, 20, GRAY);
+    else
+    {
+        DrawText("GAME OVER", GetScreenWidth() / 2 - MeasureText("GAME OVER", 20) / 2, GetScreenHeight() / 2 - 100, 20, GRAY);
+        DrawText("PRESS [ENTER] TO PLAY AGAIN", GetScreenWidth() / 2 - MeasureText("PRESS [ENTER] TO PLAY AGAIN", 20) / 2, GetScreenHeight() / 2 - 50, 20, GRAY);
+    }
 
     EndDrawing();
 }

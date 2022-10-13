@@ -135,8 +135,6 @@ void playerCollisionWall()
 
 void playerCollisionAsteroid(Asteroid bigAsteroid[], Asteroid mediumAsteroid[], Asteroid smallAsteroid[])
 {
-	shipImpacted = false;
-
 	// Collision logic: player vs meteors
 	player.collider = { (float)(player.position.x + sin(player.rotation * DEG2RAD) * (shipHeight / 2.5f)), (float)(player.position.y - cos(player.rotation * DEG2RAD) * (shipHeight / 2.5f)), 12 };
 
