@@ -159,8 +159,38 @@ void showCredits()
     HideCursor();
     DrawCircle((float)GetMouseX(), (float)GetMouseY(), 5, RED);
 
-    DrawText("Created by:", 0, screenHeight / 2 - 40, 40, WHITE);
-    DrawText("Jose Altamirano", 0, screenHeight / 2, 60, WHITE);
+    DrawText("Created by:", 0, 2, 10, WHITE);
+    DrawText("Jose Altamirano", 0, 12, 13, WHITE);
+    
+    DrawText("Texture of Ship:", 0, 30, 12, WHITE);
+    DrawText("Created by: scofanogd", 0, 40, 10, WHITE);
+    DrawText("Name of Asset: Spaceship", 0, 50, 10, WHITE);
+    DrawText("Link: ( https://opengameart.org/content/spaceship-9 )", 0, 60, 10, WHITE);
+    
+    DrawText("Texture of Asteroids:", 0, 90, 12, WHITE);
+    DrawText("Created by: IgalBlech", 0, 100, 10, WHITE);
+    DrawText("Name of Asset: Spinning Asteroid Animation", 0, 110, 10, WHITE);
+    DrawText("Link: ( https://opengameart.org/content/spinning-asteroid-animation )", 0, 120, 10, WHITE);
+    
+    DrawText("Music of Game:", 0, 150, 12, WHITE);
+    DrawText("Created by: Matthew Pablo", 0, 160, 10, WHITE);
+    DrawText("Name of Asset: Space Boss Batlle Theme", 0, 170, 10, WHITE);
+    DrawText("Link: ( https://opengameart.org/content/space-boss-battle-theme )", 0, 180, 10, WHITE);
+    
+    DrawText("Sound of Shoot:", 0, 210, 12, WHITE);
+    DrawText("Created by: jalastram", 0, 220, 10, WHITE);
+    DrawText("Name of Asset: Sound Effects | SFX007", 0, 230, 10, WHITE);
+    DrawText("Link: ( https://opengameart.org/content/sound-effects-sfx007 )", 0, 240, 10, WHITE);
+    
+    DrawText("Sound of Destruction Asteroid:", 0, 270, 12, WHITE);
+    DrawText("Created by: Luke.RUSTLTD", 0, 280, 10, WHITE);
+    DrawText("Name of Asset: bomb_explosion_8bit", 0, 290, 10, WHITE);
+    DrawText("Link: ( https://opengameart.org/content/bombexplosion8bit )", 0, 300, 10, WHITE);
+    
+    DrawText("Sound of Destruction Ship:", 0, 330, 12, WHITE);
+    DrawText("Created by: Blender Foundation", 0, 340, 10, WHITE);
+    DrawText("Name of Asset: Big Explosion", 0, 350, 10, WHITE);
+    DrawText("Link: ( https://opengameart.org/content/big-explosion )", 0, 360, 10, WHITE);
 
     //DrawButtonReturn
     drawButton(buttonReturn);
@@ -245,7 +275,7 @@ int initGame()
     return 0;
 }
 
-float Vector2Angle(Vector2 v1, Vector2 v2)
+float Vector2AngleCustom(Vector2 v1, Vector2 v2)
 {
     float result = atan2f(v2.y - v1.y, v2.x - v1.x) * (180.0f / PI);
     if (result < 0) result += 360.0f;
@@ -255,7 +285,6 @@ float Vector2Angle(Vector2 v1, Vector2 v2)
 // Initialize game variables
 void game()
 {
-    victory = false;
     checkPause = false;
 
     initPlayer();
@@ -276,8 +305,9 @@ void updateGame()
         {
             playerRotation();
             playerSpeed();
-            playerAceleration();
-            playerMovement();
+            movePlayer();
+            //playerAceleration();
+            //playerMovement();
             playerCollisionWall();
             playerBullet(bullet);
 
@@ -318,8 +348,6 @@ void updateGame()
                 }
             }
         }
-
-        if (destroyedAsteroidCount == MAX_BIG_ASTEROID + MAX_MEDIUM_ASTEROID + MAX_SMALL_ASTEROID) victory = true;
     }
     else
     {

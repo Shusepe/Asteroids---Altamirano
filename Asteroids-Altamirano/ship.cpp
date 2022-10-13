@@ -1,5 +1,6 @@
 #include "ship.h"
 #include "asteroid.h"
+#include "raymath.h"
 #include "game.h"
 
 extern float screenWidth;
@@ -25,44 +26,44 @@ void initPlayer()
 	player.explodeSfx = LoadSound(explodeSfxUrl);
 	player.position = { (float) (screenWidth / 2), (float) (screenHeight / 2 - shipHeight / 2) };
 	player.speed = { 0, 0 };
-	player.acceleration = 0;
+	player.acceleration = { 0,0 };
 	player.lives = 3;
 	player.rotation = 0;
 	player.collider = { (float)(player.position.x + sin(player.rotation * DEG2RAD) * (shipHeight / 2.5f)), (float)(player.position.y - cos(player.rotation * DEG2RAD) * (shipHeight / 2.5f)), 12 };
 	player.color = LIGHTGRAY;
 };
 
-void playerMovement() 
-{
-	// Player logic: movement
-	//nuevaPosNave = posNave + aceleracionNave * tiempoEntreFrames
+//void playerMovement() 
+//{
+//	// Player logic: movement
+//	//nuevaPosNave = posNave + aceleracionNave * tiempoEntreFrames
+//
+//	player.position.x += (player.speed.x * player.acceleration);
+//	player.position.y -= (player.speed.y * player.acceleration);
+//};
 
-	player.position.x += (player.speed.x * player.acceleration);
-	player.position.y -= (player.speed.y * player.acceleration);
-};
-
-void playerAceleration() 
-{
-	//direccionNormalizada = vectorDireccion / modulo(vectorDireccion)
-	// sumar aceleración en esa dirección 
-	//aceleracionNave += direccionNormalizada
-	
-	// Player logic: acceleration
-	if (IsMouseButtonDown(MOUSE_BUTTON_RIGHT))
-	{
-		if (player.acceleration < 1) player.acceleration += 0.04f;
-	}
-	else
-	{
-		if (player.acceleration > 0) player.acceleration -= 0.02f;
-		else if (player.acceleration < 0) player.acceleration = 0;
-	}
-};
+//void playerAceleration() 
+//{
+//	//direccionNormalizada = vectorDireccion / modulo(vectorDireccion)
+//	// sumar aceleración en esa dirección 
+//	//aceleracionNave += direccionNormalizada
+//	
+//	// Player logic: acceleration
+//	if (IsMouseButtonDown(MOUSE_BUTTON_RIGHT))
+//	{
+//		if (player.acceleration < 1) player.acceleration += 0.04f;
+//	}
+//	else
+//	{
+//		if (player.acceleration > 0) player.acceleration -= 0.02f;
+//		else if (player.acceleration < 0) player.acceleration = 0;
+//	}
+//};
 
 void playerRotation() 
 {
 	// Player logic: rotation
-	player.rotation = Vector2Angle(player.position, GetMousePosition()) + 90;
+	player.rotation = Vector2AngleCustom(player.position, GetMousePosition()) + 90;
 };
 
 void playerSpeed() 
@@ -72,35 +73,35 @@ void playerSpeed()
 	player.speed.y = cos(player.rotation * DEG2RAD) * PLAYER_SPEED;
 };
 
-//void MovePlayer(Spaceship& player, Vector2 mousePos)
-//{
-//	Vector2 direcVector = { mousePos.x - player.body.x, mousePos.y - player.body.y };
-//	Vector2 normVector = Vector2Normalize(direcVector);
-//
-//	if (IsMouseButtonDown(MOUSE_BUTTON_RIGHT))
-//	{
-//		player.aceleration.x += normVector.xGetFrameTime() / 6.0f;
-//		player.aceleration.y += normVector.yGetFrameTime() / 6.0f;
-//		AcelerationLimitator(player.aceleration.x);
-//		AcelerationLimitator(player.aceleration.y);
-//	}
-//	player.body.x += player.aceleration.x;
-//	player.body.y += player.aceleration.y;
-//
-//	WarpCoords(player) (Colision del jugador contra las paredes);
-//}
+void movePlayer()
+{
+	Vector2 dirVector = { GetMouseX() - player.position.x, GetMouseY() - player.position.y };
+	Vector2 normVector = Vector2Normalize(dirVector);
 
-//void AcelerationLimitator(float& aceleration)
-//{
-//	if (aceleration > 0.35f)
-//	{
-//		aceleration = 0.35f;
-//	}
-//	else if (aceleration < -0.35f)
-//	{
-//		aceleration = -0.35f;
-//	}
-//}
+	if (IsMouseButtonDown(MOUSE_BUTTON_RIGHT))
+	{
+		player.acceleration.x += playerAcceleration(normVector.x);
+		player.acceleration.y += playerAcceleration(normVector.y);
+	}
+	player.position.x += player.acceleration.x * GetFrameTime();
+	player.position.y += player.acceleration.y * GetFrameTime();
+}
+
+float playerAcceleration(float acceleration)
+{
+	float finalAcceleration = acceleration;
+
+	if (acceleration > 0.7f)
+	{
+		finalAcceleration = 0.7f;
+	}
+	else if (acceleration < -0.7f)
+	{
+		finalAcceleration = -0.7f;
+	}
+
+	return finalAcceleration;
+}
 
 void playerBullet(Bullet bullet[])
 {
@@ -174,7 +175,7 @@ void playerCollisionAsteroid(Asteroid bigAsteroid[], Asteroid mediumAsteroid[], 
 
 		player.position = { (float)(screenWidth / 2), (float)(screenHeight / 2 - shipHeight / 2) };
 		player.speed = { 0, 0 };
-		player.acceleration = 0;
+		player.acceleration = { 0,0 };
 		player.rotation = 0;
 		player.collider = { (float)(player.position.x + sin(player.rotation * DEG2RAD) * (shipHeight / 2.5f)), (float)(player.position.y - cos(player.rotation * DEG2RAD) * (shipHeight / 2.5f)), 12 };
 		

@@ -11,7 +11,7 @@ typedef struct Player {
     Sound explodeSfx;
     Vector2 position;
     Vector2 speed;
-    float acceleration;
+    Vector2 acceleration;
     float rotation;
     int lives;
     Vector3 collider;
@@ -19,8 +19,10 @@ typedef struct Player {
 } Player;
 
 void initPlayer();
-void playerMovement();
-void playerAceleration();
+void movePlayer();
+float playerAcceleration(float acceleration);
+/*void playerMovement();
+void playerAceleration();*/
 void playerRotation();
 void playerSpeed();
 void playerBullet(Bullet bullet[]);
